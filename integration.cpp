@@ -46,38 +46,33 @@ double integrate_with_threads(int num_threads) {
   return result;
 }
 
+void test_no_threads() {
+  steady_clock::time_point begin, end;
+
+  begin = steady_clock::now();
+  double result = trapezoidal(&ln1plusX, 0, 1);
+  end = steady_clock::now();
+  printf("No additional threads time: %lldms\n", duration_cast<milliseconds>(end - begin).count());
+  printf("Result: %.8f\n", result);
+}
+
+void test_threads(int num_threads) {
+  steady_clock::time_point begin, end;
+
+  begin = steady_clock::now();
+  double result = integrate_with_threads(num_threads);
+  end = steady_clock::now();
+
+  printf("%d threads result: %.8f\n", num_threads, result);
+  printf("%d threads time:   %lldms\n", num_threads, duration_cast<milliseconds>(end - begin).count());
+}
+
 int main() {
-  system_clock::time_point begin, end;
-  double result;
+  test_no_threads();
 
-  begin = system_clock::now();
-  result = integrate_with_threads(1);
-  end = system_clock::now();
-  printf("1 thread time %lldms\n", duration_cast<milliseconds>(end - begin).count());
-  printf("integral = %.8f\n", result);
+  for(int i = 1; i <= 8; ++i) {
+    test_threads(i);
+  }
 
-  begin = system_clock::now();
-  result = integrate_with_threads(2);
-  end = system_clock::now();
-  printf("2 threads time %lldms\n", duration_cast<milliseconds>(end - begin).count());
-  printf("integral = %.8f\n", result);
-
-  begin = system_clock::now();
-  result = integrate_with_threads(3);
-  end = system_clock::now();
-  printf("3 threads time %lldms\n", duration_cast<milliseconds>(end - begin).count());
-  printf("integral = %.8f\n", result);
-
-  begin = system_clock::now();
-  result = integrate_with_threads(4);
-  end = system_clock::now();
-  printf("4 threads time %lldms\n", duration_cast<milliseconds>(end - begin).count());
-  printf("integral = %.8f\n", result);
-
-  begin = system_clock::now();
-  result = trapezoidal(&ln1plusX, 0, 1);
-  end = system_clock::now();
-  printf("No threads time %lldms\n", duration_cast<milliseconds>(end - begin).count());
-  printf("integral = %.8f\n", result);
   return 0;
 }
